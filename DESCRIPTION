@@ -1,7 +1,7 @@
 Package: seededlda
 Type: Package
 Title: Seeded-LDA for Topic Modeling
-Version: 0.5
+Version: 0.5.1
 Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph")),
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph"), comment = "GibbsLDA++"))
 Description: Implements the seeded-LDA model (Lu, Ott, Cardie & Tsou 2010) <doi:10.1109/ICDMW.2011.125> using the quanteda package and the GibbsLDA++ library for semisupervised topic modeling. 
@@ -14,12 +14,12 @@ LazyData: true
 Depends: R (>= 3.5.0), quanteda (> 2.0), methods
 Imports: Matrix
 LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
-Suggests: testthat, quanteda.textmodels
+Suggests: testthat, quanteda.textmodels, topicmodels
 RoxygenNote: 7.1.1
 NeedsCompilation: yes
-Packaged: 2020-09-02 16:12:31 UTC; kohei
+Packaged: 2020-12-17 08:04:19 UTC; kohei
 Author: Kohei Watanabe [aut, cre, cph],
   Phan Xuan-Hieu [aut, cph] (GibbsLDA++)
 Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-09-10 09:00:03 UTC
+Date/Publication: 2020-12-17 08:50:02 UTC

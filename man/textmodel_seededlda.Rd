@@ -61,7 +61,7 @@ The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
 semisupervised learning with a seed word dictionary.
 }
 \examples{
-\donttest{
+\dontrun{
 require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")
