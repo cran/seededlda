@@ -1,25 +1,28 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
-#' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation (seeded-LDA).
-#' The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
-#' 2007). `textmodel_seededlda()` allows identification of pre-defined topics by
-#' semisupervised learning with a seed word dictionary.
-#' @param dictionary a [quanteda::dictionary()] with seed words as
-#'  examples of topics.
+#' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
+#' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
+#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows identification of
+#' pre-defined topics by semisupervised learning with a seed word dictionary.
+#' @param dictionary a [quanteda::dictionary()] with seed words that define
+#'   topics.
 #' @param residual if \code{TRUE} a residual topic (or "garbage topic") will be
 #'   added to user-defined topics.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
-#' @references
-#'   Lu, Bin et al. (2011).
-#'   [Multi-aspect Sentiment Analysis with Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585).
-#'   *Proceedings of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
+#' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
+#'   their term or document frequency. This is useful when glob patterns in the
+#'   dictionary match too many words.
+#' @references Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
+#'   Topic Models". doi:10.5555/2117693.2119585. *Proceedings
+#'   of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
 #'
-#'   Watanabe, Kohei & Zhou, Yuan (2020).
-#'   [Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches](https://doi.org/10.1177/0894439320907027).
-#'   *Social Science Computer Review*.
+#'   Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
+#'   Corpora: Semisupervised Topic Classification of the UN
+#'   Speeches". doi:10.1177/0894439320907027. *Social Science
+#'   Computer Review*.
 #'
 #' @examples
 #' \dontrun{
@@ -27,23 +30,27 @@
 #'
 #' data("data_corpus_moviereviews", package = "quanteda.textmodels")
 #' corp <- head(data_corpus_moviereviews, 500)
-#' dfmt <- dfm(corp, remove_number = TRUE) %>%
+#' toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+#' dfmt <- dfm(toks) %>%
 #'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
 #'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
 #'              max_docfreq = 0.1, docfreq_type = "prop")
 #'
 #' # unsupervised LDA
-#' lda <- textmodel_lda(dfmt, 6)
+#' lda <- textmodel_lda(head(dfmt, 450), 6)
 #' terms(lda)
+#' topics(lda)
+#' predict(lda, newdata = tail(dfmt, 50))
 #'
 #' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
-#'                         space = c("areans", "planet", "space"),
+#'                         space = c("alien", "planet", "space"),
 #'                         moster = c("monster*", "ghost*", "zombie*"),
 #'                         war = c("war", "soldier*", "tanks"),
 #'                         crime = c("crime*", "murder", "killer")))
-#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
 #' terms(slda)
+#' topics(slda)
 #' }
 #' @export
 textmodel_seededlda <- function(
@@ -52,7 +59,7 @@ textmodel_seededlda <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
 }
@@ -64,15 +71,15 @@ textmodel_seededlda.dfm <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    ..., verbose = quanteda_options("verbose")
 ) {
 
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual)
+    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
         stop("seeds must have the same features")
     k <- ncol(seeds)
     label <- colnames(seeds)
-    lda(x, k, label, max_iter, alpha, beta, seeds, verbose)
+    lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
 }
 
 #' Print method for a LDA model
@@ -84,12 +91,10 @@ textmodel_seededlda.dfm <- function(
 print.textmodel_lda <- function(x, ...) {
     cat("\nCall:\n")
     print(x$call)
-    cat("\n",
-        "Topics: ", x$k, "; ",
-        ndoc(x$data), " documents; ",
-        nfeat(x$data), " features.",
-        "\n",
-        sep = "")
+    cat("\n", "Topics: ", x$k, "; ",
+        prettyNum(ndoc(x$data), big.mark = ","), " documents; ",
+        prettyNum(nfeat(x$data), big.mark = ","), " features.",
+        "\n", sep = "")
 }
 
 #' Extract most likely terms
@@ -116,8 +121,8 @@ topics <- function(x) {
 #' @export
 #' @method topics textmodel_lda
 topics.textmodel_lda <- function(x) {
-    result <- colnames(x$theta)[max.col(x$theta)]
-    result <- factor(result, levels = colnames(x$theta))
+    result <- factor(max.col(x$theta), labels = colnames(x$theta),
+                     levels = seq_len(ncol(x$theta)))
     result[rowSums(x$data) == 0] <- NA
     return(result)
 }
@@ -127,7 +132,9 @@ topics.textmodel_lda <- function(x) {
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
-                weight = 0.01, residual = TRUE) {
+                weight = 0.01, residual = TRUE,
+                ...,
+                verbose = quanteda_options("verbose")) {
 
     valuetype <- match.arg(valuetype)
 
@@ -136,22 +143,22 @@ tfm <- function(x, dictionary,
     if (weight < 0)
         stop("weight must be pisitive a value")
 
-    id_key <- id_feat <- integer()
-    for (i in seq_along(dictionary)) {
-        f <- colnames(quanteda::dfm_select(x, dictionary[i]))
-        id_key <- c(id_key, rep(i, length(f)))
-        id_feat <- c(id_feat, match(f, colnames(x)))
-    }
-    count <- rep(floor(sum(x) * weight), length(id_feat))
     key <- names(dictionary)
-    if (residual)
+    feat <- featnames(x)
+    count <- floor(sum(x)) * weight
+    x <- dfm_trim(x, ..., verbose = verbose)
+    x <- as.dfm(rbind(colSums(x)))
+    result <- Matrix::Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
+    for (i in seq_along(dictionary)) {
+        temp <- dfm_select(x, pattern = dictionary[i])
+        temp <- dfm_match(temp, features = feat) > 0
+        result <- rbind(result, temp)
+    }
+    if (residual) {
         key <- c(key, "other")
-    result <- Matrix::sparseMatrix(
-        i = id_feat,
-        j = id_key,
-        x = count,
-        dims = c(nfeat(x), length(key)),
-        dimnames = list(colnames(x), key)
-    )
+        result <- rbind(result, Matrix::Matrix(0, nrow = 1, ncol = length(feat), sparse = TRUE))
+    }
+    result <- result * count
+    dimnames(result) <- list(key, feat)
     return(result)
 }
