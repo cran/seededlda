@@ -34,14 +34,18 @@ test_that("seeded LDA is working", {
     expect_identical(
         lda$dictionary, dict
     )
-    expect_true(
-        lda$residual
+    expect_equal(
+        lda$residual, 1
     )
     expect_equal(
         lda$weight, 0.02
     )
     expect_false(
         any(sifi %in% terms(lda)[,"other"])
+    )
+    expect_equal(
+        names(topics(lda)),
+        docnames(lda$data)
     )
     expect_setequal(
         topics(lda),
@@ -81,8 +85,8 @@ test_that("seeded LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
-          "words", "data", "call", "dictionary", "valuetype", "case_insensitive",
-          "residual", "weight")
+          "words", "data", "call", "version",
+          "dictionary", "valuetype", "case_insensitive", "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
 })
@@ -177,3 +181,15 @@ test_that("model argument works with seeded LDA", {
     )
 })
 
+test_that("divergence() is working", {
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
+                               min_termfreq = 10)
+
+    expect_equal(divergence(lda),
+                 3.78, tolerance = 0.1)
+})

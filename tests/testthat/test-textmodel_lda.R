@@ -24,6 +24,10 @@ test_that("LDA is working", {
     expect_true(
         sum(apply(terms(lda), 2, function(x)  all(sifi %in% x))) == 1 # there is a sifi topic
     )
+    expect_equal(
+        names(topics(lda)),
+        docnames(lda$data)
+    )
     expect_setequal(
        topics(lda),
        c("topic1", "topic2", "topic3", "topic4", "topic5")
@@ -60,7 +64,7 @@ test_that("LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
-          "words", "data", "call")
+          "words", "data", "call", "version")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
 })
@@ -153,5 +157,14 @@ test_that("model argument works with LDA", {
         levels(topics(lda2)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
+})
+
+test_that("divergence() is working", {
+
+    set.seed(1234)
+    lda <- textmodel_lda(dfmt, k = 5)
+
+    expect_equal(divergence(lda),
+                 2.94, tolerance = 0.1)
 })
 
