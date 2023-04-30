@@ -1,15 +1,19 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
 #' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
-#' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
-#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows users to specify
-#' topics using a seed word dictionary.
+#' (Seeded LDA). The estimator's code adopted from the GibbsLDA++ library
+#' (Phan & Nguyen, 2007). `textmodel_seededlda()` allows users to specify
+#' topics using a seed word dictionary. Users can run Seed Sequential LDA by
+#' setting `gamma > 0`.
+#' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
-#' @param weight pseudo count given to seed words as a proportion of total
-#'   number of words in `x`.
+#' @param weight determines the size of pseudo counts given to matched seed
+#'   words.
+#' @param uniform if `FALSE`, adjusts the weights of seed words to make their
+#'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
@@ -23,6 +27,9 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
+#'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   *Social Science Computer Review*.
 #' @examples
 #' \donttest{
 #' require(seededlda)
@@ -35,14 +42,6 @@
 #'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
 #'              max_docfreq = 0.1, docfreq_type = "prop")
 #'
-#' # unsupervised LDA
-#' lda <- textmodel_lda(head(dfmt, 450), 6)
-#' terms(lda)
-#' topics(lda)
-#' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
-#' topics(lda2)
-#'
-#' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
 #'                         space = c("alien", "planet", "space"),
 #'                         moster = c("monster*", "ghost*", "zombie*"),
@@ -58,8 +57,8 @@ textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01,
-    max_iter = 2000, alpha = NULL, beta = NULL,
+    residual = 0, weight = 0.01, uniform = TRUE,
+    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -70,21 +69,25 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01,
-    max_iter = 2000, alpha = NULL, beta = NULL,
+    residual = 0, weight = 0.01, uniform = TRUE,
+    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
-    residual <- as.integer(residual)
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
-    if (!identical(colnames(x), rownames(seeds)))
-        stop("seeds must have the same features")
-    k <- ncol(seeds)
-    label <- colnames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
+    residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
+    weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
+    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+                 ..., verbose = verbose)
+    if (!identical(colnames(x), colnames(seeds)))
+        stop("seeds must have the same features")
+    k <- nrow(seeds)
+    label <- rownames(seeds)
+
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
+    result$seeds <- seeds # TODO: change to omega?
     result$residual <- residual
     result$weight <- weight
     return(result)
@@ -107,7 +110,8 @@ print.textmodel_lda <- function(x, ...) {
 
 #' Extract most likely terms
 #'
-#' `terms()` returns the most likely terms, or words, for topics based on the `phi` parameter.
+#' `terms()` returns the most likely terms, or words, for topics based on the
+#' `phi` parameter.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
@@ -119,8 +123,10 @@ terms <- function(x, n = 10) {
 #' @method terms textmodel_lda
 #' @importFrom utils head
 terms.textmodel_lda <- function(x, n = 10) {
-    apply(x$phi, 1, function(x, y, z) head(y[order(x, decreasing = TRUE), drop = FALSE], z),
-          colnames(x$phi), n)
+
+    apply(x$phi, 1, function(x, y, z) {
+        head(y[order(x, decreasing = TRUE), drop = FALSE], z)
+    }, colnames(x$phi), n)
 }
 
 #' Extract most likely topics
@@ -145,7 +151,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
     if (is.null(select)) {
         j <- rep(TRUE, ncol(x$theta))
     } else {
-        select <- check_character(select, min_len = 2, max_len = ncol(x$theta), strict = TRUE)
+        select <- check_character(select, min_len = 1, max_len = ncol(x$theta), strict = TRUE)
         if (any(!select %in% colnames(x$theta)))
             stop("Selected topics must be in the model", call. = FALSE)
         j <- colnames(x$theta) %in% select
@@ -172,36 +178,57 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                weight_scheme = c("all", "topic", "word"),
+                uniform = TRUE,
+                old = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
-    residual <- as.integer(residual)
     valuetype <- match.arg(valuetype)
-    weight_scheme <- match.arg(weight_scheme)
+    residual <- as.integer(residual)
 
     if (!quanteda::is.dictionary(dictionary))
-        stop("dictionary must be a dictionary object")
-    if (weight < 0)
-        stop("weight must be pisitive a value")
+        stop("dictionary must be a dictionary object", call. = FALSE)
 
     key <- names(dictionary)
     feat <- featnames(x)
-    total <- sum(x)
+    len <- length(key)
+
+    if (length(weight) == 1) {
+        weight <- rep(weight, len)
+    } else {
+        if (length(weight) != len)
+            stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
+    }
+
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i])
-        if (weight_scheme == "all") {
-            temp <- (dfm_match(temp, features = feat) > 0) * total * weight
-        } else if (weight_scheme == "topic") {
-            temp <- (dfm_match(temp, features = feat) > 0) * sum(temp) * weight
-        } else {
-            temp <- dfm_match(temp, features = feat) * weight
-        }
+        temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
+    rownames(result) <- key
+
+    s <- sum(result)
+    if (!old) {
+        if (s > 0) {
+            p <- rep(1, nrow(result))
+            q <- colSums(result) / s # column profile
+            if (!uniform) {
+                d <- colSums(result > 0)
+                d[d == 0] <- 1
+                # q <- q / sqrt(d)
+                q <- q / d
+            }
+            w <- tcrossprod(p, q)
+            weight <- weight * 100 # for compatibility with pre v0.9
+            result <- (result > 0) * w * s * weight
+        }
+    } else {
+        result <- (result > 0) * s * weight
+    }
+
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
         if (residual == 1) {
@@ -212,5 +239,6 @@ tfm <- function(x, dictionary,
         result <- rbind(result, Matrix(0, nrow = residual, ncol = length(feat), sparse = TRUE))
     }
     dimnames(result) <- list(key, feat)
+    result <- as(result, "dgCMatrix")
     return(result)
 }
