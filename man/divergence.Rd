@@ -2,22 +2,22 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{Compute the regularized divergence of topics}
+\title{Optimize the number of topics}
 \usage{
-divergence(x, regularize = TRUE, min_size = 0.01, select = NULL)
+divergence(x, min_size = 0.01, select = NULL, regularize = TRUE)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
-
-\item{regularize}{if \code{TRUE}, compute the regularized divergence.}
 
 \item{min_size}{the minimum size of topics for regularized topic divergence.
 Ignored when \code{regularize = FALSE}.}
 
 \item{select}{names of topics for which the divergence is computed.}
+
+\item{regularize}{if \code{TRUE}, returns the regularized divergence.}
 }
 \description{
-Compute the regularized topic divergence to find the optimal
+\code{divergence()} computes the regularized topic divergence to find the optimal
 number of topics for LDA.
 }
 \details{
