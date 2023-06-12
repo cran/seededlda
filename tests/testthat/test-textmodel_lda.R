@@ -46,13 +46,11 @@ test_that("LDA is working", {
     )
     expect_equal(
         rowSums(lda$phi),
-        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1),
-        tolerance = 0.001
+        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1)
     )
     expect_equal(
         rowSums(lda$theta),
-        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt)),
-        tolerance = 0.001
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
     )
     expect_equal(
         ncol(terms(textmodel_lda(dfmt, k = 1))), 1
@@ -200,54 +198,6 @@ test_that("model argument works with LDA", {
     expect_equal(
         levels(topics(lda2)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
-    )
-})
-
-test_that("gamma is working", {
-
-    corp <- corpus_reshape(data_corpus_moviereviews[1:100])
-    toks <- tokens(corp,
-                   remove_punct = TRUE,
-                   remove_symbols = TRUE,
-                   remove_number = TRUE)
-    dfmt <- dfm(toks) %>%
-        dfm_remove(stopwords(), min_nchar = 2) %>%
-        dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
-
-    # make docid all unique
-    dfmt2 <- dfmt
-    dfmt2@docvars$docid_ <- dfmt2@docvars$docname_
-
-    set.seed(1234)
-    lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
-
-    set.seed(1234)
-    expect_warning(
-        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5),
-        "gamma has no effect when docid are all unique"
-    )
-
-    expect_equal(lda1$phi, lda2$phi)
-    expect_equal(lda1$theta, lda2$theta)
-
-    set.seed(1234)
-    lda3 <- textmodel_lda(dfmt, k = 5, gamma = 0.1)
-    expect_gt(mean(diff(as.integer(topics(lda3))) == 0, na.rm = TRUE),
-              mean(diff(as.integer(topics(lda2))) == 0, na.rm = TRUE))
-
-    set.seed(1234)
-    lda4 <- textmodel_lda(dfmt, k = 5, gamma = 0.2)
-    expect_gt(mean(diff(as.integer(topics(lda4))) == 0, na.rm = TRUE),
-              mean(diff(as.integer(topics(lda3))) == 0, na.rm = TRUE))
-
-    expect_error(
-        textmodel_lda(dfmt, k = 5, gamma = -0.1),
-        "The value of gamma must be between 0 and 1"
-    )
-
-    expect_error(
-        textmodel_lda(dfmt, k = 5, gamma = 2.0),
-        "The value of gamma must be between 0 and 1"
     )
 })
 

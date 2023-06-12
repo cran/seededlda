@@ -37,19 +37,18 @@
 #' corp <- head(data_corpus_moviereviews, 500)
 #' toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
 #' dfmt <- dfm(toks) %>%
-#'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
-#'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
-#'              max_docfreq = 0.1, docfreq_type = "prop")
+#'     dfm_remove(stopwords("en"), min_nchar = 2) %>%
+#'     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 #'
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
 #'                         space = c("alien", "planet", "space"),
 #'                         moster = c("monster*", "ghost*", "zombie*"),
 #'                         war = c("war", "soldier*", "tanks"),
 #'                         crime = c("crime*", "murder", "killer")))
-#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
-#' terms(slda)
-#' topics(slda)
-#'
+#' lda_seed <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10,
+#'                                 max_iter = 500)
+#' terms(lda_seed)
+#' topics(lda_seed)
 #' }
 #' @export
 textmodel_seededlda <- function(
@@ -197,7 +196,7 @@ tfm <- function(x, dictionary,
             stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
     }
 
-    x <- dfm_trim(x, ..., verbose = verbose)
+    x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
