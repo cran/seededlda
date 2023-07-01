@@ -7,11 +7,11 @@
 textmodel_seededlda(
   x,
   dictionary,
+  levels = 1,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = 0,
   weight = 0.01,
-  uniform = TRUE,
   max_iter = 2000,
   auto_iter = FALSE,
   alpha = 0.5,
@@ -28,6 +28,9 @@ textmodel_seededlda(
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
 topics.}
 
+\item{levels}{levels of entities in a hierarchical dictionary to be used as
+seed words. See also \link[quanteda:flatten_dictionary]{quanteda::flatten_dictionary}.}
+
 \item{valuetype}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
 \item{case_insensitive}{see \link[quanteda:valuetype]{quanteda::valuetype}}
@@ -36,9 +39,6 @@ topics.}
 default, but it can be changed via \code{base::options(seededlda_residual_name)}.}
 
 \item{weight}{determines the size of pseudo counts given to matched seed words.}
-
-\item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
-total amount equal across topics.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 

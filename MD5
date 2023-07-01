@@ -1,12 +1,12 @@
-833a45b49db9f788a70351b9237546f4 *DESCRIPTION
+67aa807f0b51eb3ccbb47bf0fe799d44 *DESCRIPTION
 5cebc459f079fdd8b014c5dc03c8955b *NAMESPACE
-8a7c85600faaabf3baa303f6be31fded *NEWS.md
+75081e391935e06cf6a070abf0e9b82d *NEWS.md
 10c7c25816a36cc6474ab54bb032a227 *R/RcppExports.R
 ff9e4e148e1c2f2c30f8c445d29af9f6 *R/catch-routine-registration.R
 4279e1b3f4d81fbaa3633aa3843147a1 *R/data.R
 8d862560c35d7550bd745482684b6daa *R/lda.R
 cec4ea3d3b2c98b59ae54ffe3e3a6f1a *R/predict.R
-a13238ebb612b8dd41ea360ed03fa0e4 *R/seededlda.R
+5e1da3b490cce429e20b0d2b219d872a *R/seededlda.R
 1d37248598f6628a237f4647f4f7cad0 *R/seqlda.R
 e6d2e9b48546cb37698433b298c9c333 *R/utils.R
 bba2daefd698177231ab33189aa86d9d *data/data_corpus_moviereviews.RData
@@ -15,8 +15,8 @@ a7d721a5b7dfb3441cdbbf5b70afed41 *man/divergence.Rd
 17472bb79f0aac8ea52621eea54ada86 *man/print.textmodel_lda.Rd
 5020e9a33ee33873ec1c3df8a5ca2211 *man/sizes.Rd
 7e26e3323c2389df6ab9a56a345cb080 *man/terms.Rd
-28c9208fb7b6c91c5f01ee302d8b2899 *man/textmodel_lda.Rd
-bc121533c9fa58628d7438168011da7f *man/textmodel_seededlda.Rd
+81e52d6e7950cb16b0be8471798f597e *man/textmodel_lda.Rd
+4dd65fd126f27bc11d5226b0e92b6188 *man/textmodel_seededlda.Rd
 3278eb3245f79b32b08a8c486aa492aa *man/textmodel_seqlda.Rd
 f69df5e8ab148d4f4c7b92d2c953b88f *man/topics.Rd
 5b256f9f581ee090e52c2ac22eca0667 *src/Makevars
@@ -36,8 +36,8 @@ d03ff6991da2efe6706d77b09e98f746 *tests/benchmark/keyATM.R
 9b458a4b08a8cfdf4e57e66711aecfa3 *tests/data/topics.yml
 9b5652e437988ab5a53f1dafdbd0e78c *tests/testthat.R
 511101c48d3712d8fa4e9af8ee2f4208 *tests/testthat/test-cpp.R
-a0e8387a06782935d61bdf1368817b83 *tests/testthat/test-internal.R
+8c7bf515af44ba369c181832457fdbf1 *tests/testthat/test-internal.R
 44b2fb5d2325f9cdfa493bb35710c820 *tests/testthat/test-textmodel_lda.R
-7a6ca7a8d48ffcd0898a0fa0b4faf719 *tests/testthat/test-textmodel_seededlda.R
+7eb8bac081d03b712e42bd3093d7e9a3 *tests/testthat/test-textmodel_seededlda.R
 481914346da6881e1035524c4f544b26 *tests/testthat/test-textmodel_seqlda.R
 6f6d97a464c0593c721adfad2da7231f *tests/testthat/test-utils.R
