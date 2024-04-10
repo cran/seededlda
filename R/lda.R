@@ -13,8 +13,8 @@
 #'   all the documents `batch_size = 1.0`. See details.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the value to smooth topic-document distribution.
-#' @param beta the value to smooth topic-word distribution.
+#' @param alpha the values to smooth topic-document distribution.
+#' @param beta the values to smooth topic-word distribution.
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
@@ -32,6 +32,12 @@
 #'   Approximate Distributed LDA proposed by Newman et al. (2009). User can
 #'   changed the number of sub-processes used for the parallel computing via
 #'   `options(seededlda_threads)`.
+#'
+#'   `set.seed()` should be called immediately before `textmodel_lda()` or
+#'   `textmodel_seededlda()` to control random topic assignment. If the random
+#'   number seed is the same, the serial algorithm produces identical results;
+#'   the parallel algorithm produces non-identical results because it
+#'   classifies documents in different orders using multiple processors.
 #'
 #'   To predict topics of new documents (i.e. out-of-sample), first, create a
 #'   new LDA model from a existing LDA model passed to `model` in
@@ -117,8 +123,6 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
-    alpha <- check_double(alpha, min = 0)
-    beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
@@ -133,6 +137,14 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
         min_delta <- -1.0
     }
 
+    if (length(alpha) == 1)
+    	alpha <- rep(alpha, k)
+    alpha <- check_double(alpha, min_len = k, max_len = k, min = 0)
+
+    if (length(beta) == 1)
+    	beta <- rep(beta, k)
+    beta <- check_double(beta, min_len = k, max_len = k, min = 0)
+
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
         warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
@@ -140,11 +152,10 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
         stop("batch_size musht be larger than 0", call. = FALSE)
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     batch <- ceiling(ndoc(x) * batch_size)
-    thread <- check_integer(getOption("seededlda_threads", -1))
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch, verbose, thread)
+                      first, random, batch, verbose, get_threads())
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))

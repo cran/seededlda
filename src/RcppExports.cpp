@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, double alpha, double beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, int random, int batch, bool verbose, int threads);
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, std::vector<double> alpha, std::vector<double> beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, int random, int batch, bool verbose, int threads);
 RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP min_deltaSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP firstSEXP, SEXP randomSEXP, SEXP batchSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -21,8 +21,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< int >::type max_iter(max_iterSEXP);
     Rcpp::traits::input_parameter< double >::type min_delta(min_deltaSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type words(wordsSEXP);
@@ -35,11 +35,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_get_max_thread
+int cpp_get_max_thread();
+RcppExport SEXP _seededlda_cpp_get_max_thread() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_get_max_thread());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_tbb_enabled
+bool cpp_tbb_enabled();
+RcppExport SEXP _seededlda_cpp_tbb_enabled() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_tbb_enabled());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 14},
+    {"_seededlda_cpp_get_max_thread", (DL_FUNC) &_seededlda_cpp_get_max_thread, 0},
+    {"_seededlda_cpp_tbb_enabled", (DL_FUNC) &_seededlda_cpp_tbb_enabled, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
