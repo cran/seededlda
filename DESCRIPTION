@@ -1,7 +1,7 @@
 Package: seededlda
 Type: Package
 Title: Seeded Sequential LDA for Topic Modeling
-Version: 1.2.0
+Version: 1.2.1
 Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph")),
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph"), comment = "GibbsLDA++"))
 Description: Seeded Sequential LDA can classify sentences of texts into pre-define topics with a small number of seed words (Watanabe & Baturo, 2023) <doi:10.1177/08944393231178605>.
@@ -18,9 +18,9 @@ LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Suggests: testthat, topicmodels, keyATM
 RoxygenNote: 7.3.1
 NeedsCompilation: yes
-Packaged: 2024-04-08 01:35:56 UTC; watan
+Packaged: 2024-04-10 23:11:26 UTC; watan
 Author: Kohei Watanabe [aut, cre, cph],
   Phan Xuan-Hieu [aut, cph] (GibbsLDA++)
 Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-04-10 06:50:02 UTC
+Date/Publication: 2024-04-11 09:00:02 UTC
