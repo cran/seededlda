@@ -46,12 +46,15 @@ all the documents \code{batch_size = 1.0}. See details.}
 fitting.}
 }
 \value{
-\code{textmodel_seededlda()} and \code{textmodel_lda()} returns a list of model
-parameters. \code{theta} is the distribution of topics over documents; \code{phi} is
-the distribution of words over topics. \code{alpha} and \code{beta} are the small
-constant added to the frequency of words to estimate \code{theta} and \code{phi},
-respectively, in Gibbs sampling. Other elements in the list subject to
-change.
+Returns a list of model parameters:
+\item{k}{the number of topics.}
+\item{last_iter}{the number of iterations in Gibbs sampling}
+\item{phi}{the distribution of words over topics.}
+\item{theta}{the distribution of topics over documents.}
+\item{words}{the raw frequency count of words assigned to topics.}
+\item{data}{the original input of \code{x}.}
+\item{call}{the command used to execute the function.}
+\item{version}{the version of the seededlda package.}
 }
 \description{
 Implements unsupervised Latent Dirichlet allocation (LDA). Users can run

@@ -1,3 +1,8 @@
+## Changes in v1.3.0
+
+- Add `perplexity()` to compute perplexity scores of fitted LDA models.
+- Improve documentation.
+
 ## Changes in v1.2.1
 
 - Fix tests on systems when the TBB library is unavailable.

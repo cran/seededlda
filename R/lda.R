@@ -45,12 +45,15 @@
 #'   argument takes objects created either by `textmodel_lda()` or
 #'   `textmodel_seededlda()`.
 #'
-#' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
-#'   parameters. `theta` is the distribution of topics over documents; `phi` is
-#'   the distribution of words over topics. `alpha` and `beta` are the small
-#'   constant added to the frequency of words to estimate `theta` and `phi`,
-#'   respectively, in Gibbs sampling. Other elements in the list subject to
-#'   change.
+#' @returns Returns a list of model parameters:
+#'   \item{k}{the number of topics.}
+#'   \item{last_iter}{the number of iterations in Gibbs sampling}
+#'   \item{phi}{the distribution of words over topics.}
+#'   \item{theta}{the distribution of topics over documents.}
+#'   \item{words}{the raw frequency count of words assigned to topics.}
+#'   \item{data}{the original input of `x`.}
+#'   \item{call}{the command used to execute the function.}
+#'   \item{version}{the version of the seededlda package.}
 #' @references
 #'
 #' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
@@ -101,7 +104,7 @@ textmodel_lda.dfm <- function(
             gamma <- 0
         }
         words <- model$words
-        warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
+        warning("k, alpha, beta and gamma values are overwritten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
@@ -162,7 +165,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
     result$batch_size <- batch_size
-    result$call <- match.call(sys.function(-2), call = sys.call(-2))
+    result$call <- try(match.call(sys.function(-2), call = sys.call(-2)), silent = TRUE)
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
