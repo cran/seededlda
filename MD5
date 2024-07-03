@@ -1,6 +1,6 @@
-13d5eeab9a9001c0c2b38619766f7ced *DESCRIPTION
+74f8bab0dddf69645a2430a65985907f *DESCRIPTION
 c8797c601309bb45e70d5b1e45751b9b *NAMESPACE
-d6b494c56bdb2414e92d9a112a975d5c *NEWS.md
+875773f6fe01fd55c08c54b78d02c112 *NEWS.md
 f5c99abb382613fef5e97fbb806e6c4a *R/RcppExports.R
 ff9e4e148e1c2f2c30f8c445d29af9f6 *R/catch-routine-registration.R
 4279e1b3f4d81fbaa3633aa3843147a1 *R/data.R
@@ -20,15 +20,15 @@ eef2831f8ba1a6ce3e038600304affe1 *man/perplexity.Rd
 17472bb79f0aac8ea52621eea54ada86 *man/print.textmodel_lda.Rd
 b569b72a76b26d2339bcf7d5a0747068 *man/sizes.Rd
 cb4d1aa7d19137f4e433e829e12dce56 *man/terms.Rd
-dff56b95a3b06769b02ebbbfadbc8a14 *man/textmodel_lda.Rd
+144f3f8e0f1fa6f5dac873368cf7a104 *man/textmodel_lda.Rd
 bdcd59432828e2a59797470485c5a569 *man/textmodel_seededlda.Rd
 2a9f89bcde104d52a18c304eaa8b4b91 *man/textmodel_seqlda.Rd
 0b18a57168c8026f834b973c41fbdf88 *man/topics.Rd
 d6fa46d0129272e975a770bdd05e6a53 *src/Makevars
 b255194d30b8cf40c9f8987fa595ca85 *src/Makevars.win
 10579d122f934a3f350ff0978919c1e9 *src/RcppExports.cpp
-dd9fe9d4207d49d0d659ac43356ce3eb *src/array.h
-134805c1b64f7485b658af113643e888 *src/lda.cpp
+9e5ba7928d6c948a2a961f26ad3beca3 *src/array.h
+f97b6436c021666f66822adb36838c1f *src/lda.cpp
 ecbefb91559752e9a03d75834b95f74c *src/lda.h
 ae4002ed023072db24bbf0f0c87450b7 *src/test-array.cpp
 c2cb0c30e10da611f9fbe56aea52f7a9 *src/test-runner.cpp
