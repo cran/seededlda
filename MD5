@@ -1,6 +1,6 @@
-d372a9e9ab6ecb1aa9f5117ebfd397a2 *DESCRIPTION
+74bf8974db957b269018ea74ab8f0e14 *DESCRIPTION
 7d89285e4398b21c5f65ae79dcabb53b *NAMESPACE
-fe655266c0cd9b5c7efc4714e32580c6 *NEWS.md
+cea4d4f0d959787d56ef2c6b5c6e18b8 *NEWS.md
 ee1e1f9514a1543a2cfefc2fcb6b2646 *R/RcppExports.R
 ff9e4e148e1c2f2c30f8c445d29af9f6 *R/catch-routine-registration.R
 4279e1b3f4d81fbaa3633aa3843147a1 *R/data.R
@@ -27,7 +27,7 @@ cb4d1aa7d19137f4e433e829e12dce56 *man/terms.Rd
 80a73cd126b087104c4bafbc2e485967 *man/textmodel_seededlda.Rd
 2a9f89bcde104d52a18c304eaa8b4b91 *man/textmodel_seqlda.Rd
 0b18a57168c8026f834b973c41fbdf88 *man/topics.Rd
-7c66a742ac9cd8668fc1c70a630741bf *src/Makevars.in
+c3775a1ca695684cf17adc8d87ecd28e *src/Makevars.in
 b255194d30b8cf40c9f8987fa595ca85 *src/Makevars.win
 7201b580160c51c852b6460dca195dad *src/RcppExports.cpp
 6f79805ff10a6051bb2768931a9ce89a *src/array.h
