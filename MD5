@@ -1,6 +1,6 @@
-74bf8974db957b269018ea74ab8f0e14 *DESCRIPTION
+17b154e5607c3f367a68eab1a53bc451 *DESCRIPTION
 7d89285e4398b21c5f65ae79dcabb53b *NAMESPACE
-cea4d4f0d959787d56ef2c6b5c6e18b8 *NEWS.md
+050fd4b277b104af3cc40170735c193e *NEWS.md
 ee1e1f9514a1543a2cfefc2fcb6b2646 *R/RcppExports.R
 ff9e4e148e1c2f2c30f8c445d29af9f6 *R/catch-routine-registration.R
 4279e1b3f4d81fbaa3633aa3843147a1 *R/data.R
@@ -46,7 +46,7 @@ d03ff6991da2efe6706d77b09e98f746 *tests/benchmark/keyATM.R
 332173f20d20942c02019350ea4dcadc *tests/spelling.R
 9b5652e437988ab5a53f1dafdbd0e78c *tests/testthat.R
 511101c48d3712d8fa4e9af8ee2f4208 *tests/testthat/test-cpp.R
-3abbce9846a7deb520a4a96d53f70f81 *tests/testthat/test-internal.R
+48e2edf14bc18349f66701b2af6c888b *tests/testthat/test-internal.R
 0b23e6d49c8566bb5a96d76359ce7219 *tests/testthat/test-textmodel_lda.R
 0dd24191bd18125892b48c640115f8ca *tests/testthat/test-textmodel_seededlda.R
 481914346da6881e1035524c4f544b26 *tests/testthat/test-textmodel_seqlda.R
